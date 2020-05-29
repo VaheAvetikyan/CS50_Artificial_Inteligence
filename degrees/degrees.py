@@ -1,6 +1,6 @@
 import csv
 import sys
-
+import time
 from util import Node, StackFrontier, QueueFrontier
 
 # Maps names to a set of corresponding person_ids
@@ -68,7 +68,7 @@ def main():
     target = person_id_for_name(input("Name: "))
     if target is None:
         sys.exit("Person not found.")
-
+    t0 = time.time()
     path = shortest_path(source, target)
 
     if path is None:
@@ -82,6 +82,8 @@ def main():
             person2 = people[path[i + 1][1]]["name"]
             movie = movies[path[i + 1][0]]["title"]
             print(f"{i + 1}: {person1} and {person2} starred in {movie}")
+    t1 = time.time()
+    print(t1 - t0)
 
 
 def shortest_path(source, target):
@@ -107,25 +109,25 @@ def shortest_path(source, target):
 
         # If nothing left in frontier, then no path
         if frontier.empty():
-            raise Exception("no solution")
+            return None
 
         node = frontier.remove()
-
-        if node.state == target:
-            while node.parent is not None:
-                path.append((node.action, node.state))
-                node = node.parent
-
-            path.reverse()
-            return path
 
         # Mark node as explored
         explored.add(node.state)
         
         # Add neighbors to frontier
         for movie, pesron in neighbors_for_person(node.state):
-            if not frontier.contains_state(pesron) and pesron not in explored:
+            if pesron not in explored: #not frontier.contains_state(pesron) and 
                 child = Node(state=pesron, parent=node, action=movie)
+
+                if child.state == target:
+                    while child.parent is not None:
+                        path.append((child.action, child.state))
+                        child = child.parent
+
+                    path.reverse()
+                    return path
                 frontier.add(child)
 
     return path
