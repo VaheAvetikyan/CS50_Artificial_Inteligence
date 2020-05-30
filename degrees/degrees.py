@@ -118,7 +118,7 @@ def shortest_path(source, target):
         
         # Add neighbors to frontier
         for movie, pesron in neighbors_for_person(node.state):
-            if pesron not in explored: #not frontier.contains_state(pesron) and 
+            if pesron not in explored and not frontier.contains_state(pesron):
                 child = Node(state=pesron, parent=node, action=movie)
 
                 if child.state == target:
